@@ -1,5 +1,5 @@
 import os
-from src import abd
+from src.adb import Adb
 from src.path import Path
 from src.config import Config
 
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     print(Path.getcwd())
     print(Path.get_adb_path())
 
-    print(Config.get_connectaddress())
+    abd.Adb
 
     
     

@@ -1,6 +1,6 @@
 import os
 
-class Abd:
+class Adb:
 
     def __init__(self, adbpath:str, screenshots_dir:str, hostport: str) -> None:
         '''new'''
@@ -16,8 +16,7 @@ class Abd:
         return result
 
     def check(self):
-        
-        pass
+        os.system(f'{self.__adbpath} connect {self.__hostport}')
     
     def screenshots(self):
         '''设备屏幕截图'''

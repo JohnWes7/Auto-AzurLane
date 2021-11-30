@@ -16,6 +16,6 @@ class Config:
         return cls.__ini
     
     @classmethod
-    def get_connectaddress(cls):
-        return cls.__getconfig().get('general','connectaddres')
+    def get_hostport(cls):
+        return cls.__getconfig().get('general','hostport')
     
