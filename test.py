@@ -11,15 +11,14 @@ def screenshots():
     print(result)
 
 
-
 if __name__ == '__main__':
-    #e:/MyScripts/Auto-AzurLane/adb/adb.exe
+    # e:/MyScripts/Auto-AzurLane/adb/adb.exe
+    #e:/MyScripts/Auto-AzurLane/src/image/screenshots
     print(Path.getcwd())
     print(Path.get_adb_path())
+    print(Path.get_screenshots_dir())
 
-    abd.Adb
+    a = Adb(Path.get_adb_path(), Path.get_screenshots_dir(),Config.get_hostport())
 
-    
-    
-
-    
+    a.check()
+    a.screenshots()

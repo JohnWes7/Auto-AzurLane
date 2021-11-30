@@ -4,7 +4,6 @@ import os
 class Path:
 
     __cwd = None
-    __a = 5
 
     @classmethod
     def getcwd(cls):
@@ -27,15 +26,9 @@ class Path:
     def get_configini_path(cls):
         return cls.getcwd() + '/config.ini'
     
-    @classmethod
-    def test(cls):
-        return id(cls.__a)
-
-    @classmethod
-    def geta(cls):
-        return cls.__a
-    
-    @classmethod
-    def seta(cls, a):
-        cls.__a = a
+    @staticmethod
+    def checkdir(dirpath):
+        if os.path.exists(dirpath) and os.path.isdir(dirpath):
+            return
+        os.makedirs(dirpath)
 
