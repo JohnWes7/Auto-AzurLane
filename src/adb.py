@@ -11,10 +11,18 @@ class Adb:
         self.__hostport = hostport
 
     # 给这一台设备实例下命令
-    def command(self, command: str):
-        '''向设备下命令'''
+    def hostport_command(self, command: str):
+        '''adb -s 设备端口 command'''
         result = os.popen(f'{self.__adbpath} -s {self.__hostport} {command}')
-        return result
+        result.reconfigure(encoding='utf-8')
+        return result.read().strip()
+
+    # adb命令
+    def adb_command(self, command: str):
+        '''adb command'''
+        result = os.popen(f'{self.__adbpath} {command}')
+        result.reconfigure(encoding='utf-8')
+        return result.read().strip()
 
     def check(self):
         '''检查'''
@@ -31,12 +39,12 @@ class Adb:
 
     def check_connect(self):
         '''检查设备连接'''
-        print('检查连接:\t', end=' ')
+        print('检查连接:\t', end='')
 
         # 尝试连接
-        re = os.popen(f'{self.__adbpath} connect {self.__hostport}').read()
-        print(re, end='')
-        devices = os.popen(f'{self.__adbpath} devices').read()
+        out = self.adb_command(f'connect {self.__hostport}')
+        print(out)
+        devices = self.adb_command(f'devices')
         devices = devices.splitlines()
 
         # 检测是否在设备列表中
@@ -70,7 +78,7 @@ class Adb:
 
     def check_adb(self):
         '''检查adb位置'''
-        print('检查adb路径:\t', self.__adbpath, end=' ')
+        print('检查adb路径:\t', self.__adbpath, end='\t')
         if os.path.exists(self.__adbpath):
             print('success')
         else:
@@ -82,23 +90,26 @@ class Adb:
         print('检查杂项: ')
 
         # 检查屏幕分辨率
-        out = self.command('shell wm size').read()
-        print('分辨率:\t', out[:-1], end='')
+        out = self.hostport_command('shell wm size')
+        print('分辨率:\t', out)
         if not '1280x720' in out:
             print('请将分辨率设置为 1280x720')
             exit(1)
         # 像素密度
-        out = self.command('shell wm density').read()
-        print('像素密度:\t'+out[:-1], end='')
+        out = self.hostport_command('shell wm density')
+        print('像素密度:\t'+out)
         # 系统类型
-        out = self.command('shell getprop ro.product.device').read()
-        print('系统类型:\t'+out[:-1], end='')
+        out = self.hostport_command('shell getprop ro.product.device')
+        print('系统类型:\t'+out)
         # 系统版本
-        out = self.command('shell getprop ro.build.version.release').read()
-        print('系统版本:\t'+out[:-1], end='')
+        out = self.hostport_command('shell getprop ro.build.version.release')
+        print('系统版本:\t'+out)
 
     def screenshots(self):
         '''设备屏幕截图'''
-        
         command = f'exec-out screencap -p > {self.__screenshots_path}'
-        self.command(command)
+        self.hostport_command(command)
+    
+    def macth(*img_pathlist:str):
+        pass
+
