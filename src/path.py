@@ -33,6 +33,30 @@ class Path:
     def get_ui_tryagain_path(cls):
         return cls.get_ui_dir() + '/tryagain.png'
     
+    @classmethod
+    def get_ui_pause_path(cls):
+        return cls.get_ui_dir() + '/pause.png'
+    
+    @classmethod
+    def get_ui_fulldock_path(cls):
+        return cls.get_ui_dir() + '/fulldock.png'
+
+    @classmethod
+    def get_ui_clean_up_path(cls):
+        return cls.get_ui_dir() + '/clean_up.png'
+
+    @classmethod
+    def get_ui_retired_path(cls):
+        return cls.get_ui_dir() + '/retired.png'
+    
+    @classmethod
+    def get_ui_confirm_path(cls):
+        return cls.get_ui_dir() + '/confirm.png'
+        
+    @classmethod
+    def get_ui_tap_to_continue_path(cls):
+        return cls.get_ui_dir() + '/tap_to_continue.png'
+    
     @staticmethod
     def checkdir(dirpath):
         if os.path.exists(dirpath) and os.path.isdir(dirpath):

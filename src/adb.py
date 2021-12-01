@@ -1,7 +1,11 @@
 import os
+import cv2
+from src.position import Position
 
 
 class Adb:
+
+    threshold = 0.8
 
     def __init__(self, adbpath: str, screenshots_dir: str, hostport: str) -> None:
         '''new'''
@@ -9,6 +13,9 @@ class Adb:
         self.__screenshots_path = screenshots_dir + \
             '/' + hostport.replace(':', '-') + '.png'
         self.__hostport = hostport
+
+    def get_screenshots_path(self):
+        return self.__screenshots_path
 
     # 给这一台设备实例下命令
     def hostport_command(self, command: str):
@@ -109,7 +116,25 @@ class Adb:
         '''设备屏幕截图'''
         command = f'exec-out screencap -p > {self.__screenshots_path}'
         self.hostport_command(command)
-    
-    def macth(*img_pathlist:str):
-        pass
 
+    def macth(self, img_path: str, threshold=threshold):
+        '''和传入图片进行对比'''
+        self.screenshots()
+        screenshot = cv2.imread(self.__screenshots_path)
+        template = cv2.imread(img_path)
+        # 进行比较
+        out = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
+        # 获得比较结果矩阵最小值，最大值，最小值索引，最大值索引 也就是真正的结果
+        minvalue, maxvalue, minpos, maxpos = cv2.minMaxLoc(out)
+
+        # 如果maxvalue超过阈值 返回找到的position结果
+        if maxvalue > threshold:
+            posx = maxpos[0] + int(template.shape[1]/2)
+            posy = maxpos[1] + int(template.shape[0]/2)
+            return Position(posx, posy, maxvalue, img_path)
+
+    def tap(self, pos: Position):
+        '''点击postion的位置'''
+        x, y = pos.get_pos()
+        cm = f'shell input tap {x} {y}'
+        self.hostport_command(cm)
