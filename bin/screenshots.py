@@ -9,6 +9,7 @@ from src.config import Config
 
 def run():
     a = Adb(adbpath=Path.get_adb_path(),screenshots_dir=Path.get_screenshots_dir(),hostport=Config.get_hostport())
+    a.check()
     a.screenshots()
     print(f'截图已保存 {a.get_screenshots_path()}')
 

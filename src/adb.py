@@ -138,3 +138,7 @@ class Adb:
         x, y = pos.get_pos()
         cm = f'shell input tap {x} {y}'
         self.hostport_command(cm)
+
+    def swipe(self, start_x, start_y, end_x, end_y, duration=1500):
+        '''滑动'''
+        self.run('shell input swipe %d %d %d %d %d' % (start_x, start_y, end_x, end_y, duration))

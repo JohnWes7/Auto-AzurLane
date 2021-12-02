@@ -93,5 +93,18 @@ def test2():
     else:
         print(pos)
 
+def test3():
+    a = Adb(Path.get_adb_path(),Path.get_screenshots_dir(),Config.get_hostport())
+    #a.check()
+    pos = a.macth(Path.get_ui_tap_to_continue_path())
+    if pos:
+        print(pos.__dict__)
+        ss = cv2.imread(a.get_screenshots_path())
+        y,x,_ = cv2.imread(pos.name).shape
+        cv2.rectangle(ss,(pos.x+int(x/2),pos.y+int(y/2)),(pos.x-int(x/2),pos.y-int(y/2)),(0,0,200),2)
+        cv2.imshow('',ss)
+        cv2.waitKey()
+        a.tap(pos)
+
 if __name__ == '__main__':
-   test2()
+   test3()
