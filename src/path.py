@@ -100,6 +100,19 @@ class Path:
     def get_ui_delegate_start_path(cls):
         return Path.ensure_exisit(cls.get_ui_dir() + '/delegate_start.png')
 
+    @classmethod
+    def get_ui_home_path(cls):
+        return Path.ensure_exisit(cls.get_ui_dir() + '/home.png')
+
+    @classmethod
+    def get_ui_delegate_0_path(cls):
+        return Path.ensure_exisit(cls.get_ui_dir() + '/delegate_0.png')
+
+    @classmethod
+    def get_1_path(cls):
+        return Path.ensure_exisit(cls.get_ui_dir() + '/!.png')
+
+
     @staticmethod
     def checkdir(dirpath):
         if os.path.exists(dirpath) and os.path.isdir(dirpath):

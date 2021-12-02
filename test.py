@@ -2,7 +2,7 @@ import os
 from src.adb import Adb
 from src.path import Path
 from src.config import Config
-from matplotlib import pyplot
+from src.auto_azurlane import AutoAzurLane
 import cv2
 import time
 
@@ -96,7 +96,7 @@ def test2():
 def test3():
     a = Adb(Path.get_adb_path(),Path.get_screenshots_dir(),Config.get_hostport())
     #a.check()
-    pos = a.macth(Path.get_ui_tap_to_continue_path())
+    pos = a.macth(Path.get_ui_delegate_done_path())
     if pos:
         print(pos.__dict__)
         ss = cv2.imread(a.get_screenshots_path())
@@ -106,5 +106,17 @@ def test3():
         cv2.waitKey()
         a.tap(pos)
 
+def test4():
+    a = Adb(Path.get_adb_path(),Path.get_screenshots_dir(),Config.get_hostport())
+    #a.swipe(640,360,640,150)
+    a.swipe(640,150,640,360)
+
+def test5():
+    a = Adb(Path.get_adb_path(),Path.get_screenshots_dir(),Config.get_hostport())
+    a.check()
+    azurlane = AutoAzurLane(a)
+    print(azurlane.get_page())
+    azurlane.check_delegation()
+
 if __name__ == '__main__':
-   test3()
+   test5()

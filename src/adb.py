@@ -1,7 +1,7 @@
 import os
 import cv2
 from src.position import Position
-
+import time
 
 class Adb:
 
@@ -117,9 +117,10 @@ class Adb:
         command = f'exec-out screencap -p > {self.__screenshots_path}'
         self.hostport_command(command)
 
-    def macth(self, img_path: str, threshold=threshold):
+    def macth(self, img_path: str, threshold=threshold, shots=True):
         '''和传入图片进行对比'''
-        self.screenshots()
+        if shots:
+            self.screenshots()
         screenshot = cv2.imread(self.__screenshots_path)
         template = cv2.imread(img_path)
         # 进行比较
@@ -132,13 +133,17 @@ class Adb:
             posx = maxpos[0] + int(template.shape[1]/2)
             posy = maxpos[1] + int(template.shape[0]/2)
             return Position(posx, posy, maxvalue, img_path)
+    
+    def macths(self, *img_path:str, threshold=threshold, shots=True):
+        pass
 
-    def tap(self, pos: Position):
+    def tap(self, pos: Position, sleepsec=0.25):
         '''点击postion的位置'''
         x, y = pos.get_pos()
         cm = f'shell input tap {x} {y}'
         self.hostport_command(cm)
+        time.sleep(sleepsec)
 
     def swipe(self, start_x, start_y, end_x, end_y, duration=1500):
         '''滑动'''
-        self.run('shell input swipe %d %d %d %d %d' % (start_x, start_y, end_x, end_y, duration))
+        self.hostport_command('shell input swipe %d %d %d %d %d' % (start_x, start_y, end_x, end_y, duration))
