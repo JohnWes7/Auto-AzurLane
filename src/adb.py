@@ -2,6 +2,8 @@ import os
 import cv2
 from src.position import Position
 import time
+import math
+from src.timer import Timer
 
 class Adb:
 
@@ -133,9 +135,6 @@ class Adb:
             posx = maxpos[0] + int(template.shape[1]/2)
             posy = maxpos[1] + int(template.shape[0]/2)
             return Position(posx, posy, maxvalue, img_path)
-    
-    def macths(self, *img_path:str, threshold=threshold, shots=True):
-        pass
 
     def tap(self, pos: Position, sleepsec=0.25):
         '''点击postion的位置'''
@@ -147,3 +146,28 @@ class Adb:
     def swipe(self, start_x, start_y, end_x, end_y, duration=1500):
         '''滑动'''
         self.hostport_command('shell input swipe %d %d %d %d %d' % (start_x, start_y, end_x, end_y, duration))
+    
+    def search(self, img_path, threshold=threshold, sleepsec=0.25, searchtime=math.inf, timeout=300, searchfall_callback=None):
+        '''寻找某张图片 在指定的次数和时间限制内  如果当前这次没找到会调用一次searchfall_callback'''
+        uiname = os.path.split(img_path)[1]
+
+        timer = Timer()
+        i = 0
+        while i < searchtime:
+            print(f'\r正在寻找{uiname}\t{timer.get_duration()}s', end='')
+            pos = self.macth(img_path,threshold)
+            if pos:
+                print(f'\r正在寻找{uiname}\t{timer.get_duration()}s\tsuccess')
+                return pos
+            else:
+                if searchfall_callback:
+                    plist = [i,timer,self,img_path,threshold,sleepsec,searchtime,timeout]
+                    searchfall_callback(*plist)
+            i+=1
+            if timer.get_duration() > timeout:
+                print(f'\r正在寻找{uiname}\t{timer.get_duration()}s\tfail')
+                return
+            time.sleep(sleepsec)
+        print(f'\r正在寻找{uiname}\t{timer.get_duration()}s\tfail')
+            
+
