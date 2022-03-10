@@ -1,3 +1,4 @@
+from _typeshed import Self
 import os
 from src.adb import Adb
 from src.path import Path
@@ -11,13 +12,15 @@ class AutoAzurLane:
     pages = {
         'home': Path.get_ui_weigh_anchor_path(),
         'weigh_anchor': Path.get_ui_delegate_path(),
-        'delegation': Path.get_ui_delegate_page_path()
+        'delegation': Path.get_ui_delegate_page_path(),
+        'infight': Path.get_ui_pause_path()
     }
 
     def __init__(self, adb: Adb) -> None:
         self.adb = adb
         self.current_page = None
 
+    #按照page字典获得当前页面
     def get_page(self):
         '''检查当前的页面'''
         self.adb.screenshots()
@@ -52,15 +55,15 @@ class AutoAzurLane:
     def collect_start_delegation(self):
         # 页面检查确保页面正确
         if not self.get_page() == 'delegation':
-            raise('委托收取失败：不在委托界面')
+            raise('委托收取失败: 不在委托界面')
         self.current_page = 'delegation'
 
         # 开始收委托
         timer = Timer()
         count = 0
-        print(f'进行一个委托的收取\t{timer.get_duration()}')
+        print(f'\r进行一个委托的收取\t{timer.get_duration()}s')
         while True:
-            print(f'\r检索收取委托中\t{timer.get_duration()}', end='')
+            print(f'\r检索收取委托中\t{timer.get_duration()}s', end='')
             pos = self.adb.search(Path.get_ui_done_path(),searchtime=3,searchfall_callback=AutoAzurLane.__swipe_callback)
             if pos:
                 self.adb.tap(pos)
@@ -75,22 +78,31 @@ class AutoAzurLane:
         # 开始挂委托
         timer = Timer()
         count = 0
-        print('进行一个委托的挂')
+        print(f'\r进行一个委托的挂\t{timer.get_duration()}s')
         while True:
-            print(f'\r检索挂委托中\t{timer.get_duration()}', end='')
+            print(f'\r检索挂委托中\t{timer.get_duration()}s', end='')
             # 检查可派遣队伍
             pos = self.adb.macth(Path.get_ui_delegate_0_path())
             if pos:
                 print(f'\r可派遣队伍为零\t{timer.get_duration()}s\t已承接:{count}\tdone')
                 break
-
-            pos = pos = self.adb.search(Path.get_ui_delegate_free_path(),searchtime=3,searchfall_callback=AutoAzurLane.__swipe_callback)
+            
+            #找到可用的委托
+            pos = self.adb.search(Path.get_ui_delegate_free_path(),searchtime=3,searchfall_callback=AutoAzurLane.__swipe_callback)
             if pos:
+                #点击委托
                 self.adb.tap(pos)
+                #点击推荐
                 self.tap_until_search(
                     Path.get_ui_delegate_advice_path(), 'delegation')
+                #点击开始
                 self.tap_until_search(
                     Path.get_ui_delegate_start_path(), 'delegation', sleepsec=1)
+                #是否委托耗油确认
+                confirm = self.adb.search(Path.get_ui_confirm_path(), searchtime=1)
+                if confirm:
+                    self.adb.tap(confirm)
+                #点击下半部分退出委托选择
                 self.adb.tap(Position(640, 550, 1, ''), sleepsec=1)
                 count += 1
 
@@ -108,5 +120,19 @@ class AutoAzurLane:
         if self.current_page == 'weigh_anchor':
             self.tap_until_search(
                 Path.get_ui_delegate_path(), 'delegation', uiname='委托任务')
-
+        
+        #开始收菜
         self.collect_start_delegation()
+
+        #跳回到主界面
+        self.tap_until_search(Path.get_ui_home_path(), 'home', uiname='home')
+
+    #是否在战斗中
+    def in_fight(self):
+        pos = self.adb.macth(AutoAzurLane.pages.get('infight'))
+        if pos:
+            return True
+        return False
+    
+    def in_battlecommand(self):
+        pass

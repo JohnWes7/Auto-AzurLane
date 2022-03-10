@@ -5,6 +5,7 @@ from src.config import Config
 from src.auto_azurlane import AutoAzurLane
 import cv2
 import time
+import random
 
 def test():
      # e:/MyScripts/Auto-AzurLane/adb/adb.exe
@@ -118,5 +119,19 @@ def test5():
     print(azurlane.get_page())
     azurlane.check_delegation()
 
+def test6():
+    a = Adb(Path.get_adb_path(),Path.get_screenshots_dir(),Config.get_hostport())
+    a.check()
+    azurlane = AutoAzurLane(a)
+    print(azurlane.get_page())
+
+    count = 0
+    while True:
+        count+=1
+        print(f'检查次数count:\t{count}')
+        azurlane.check_delegation()
+        time.sleep(300)
+
 if __name__ == '__main__':
-   test5()
+    print(random.randint(1,100))
+    #test6()
